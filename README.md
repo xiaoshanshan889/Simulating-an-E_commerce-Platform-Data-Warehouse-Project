@@ -1,7 +1,6 @@
  电商数仓项目
 - 从 MySQL 到分布式数仓的完整实践项目，模拟电商平台数据的日常工作。
 
----
 项目背景
 本项目从零搭建了一套电商数据仓库，覆盖 ODS → DWD → DWS → ADS 四层建模，并完成了 SQL 性能优化。
 目标是能够快速看到：
@@ -9,6 +8,7 @@
 - 各城市、各品类的销售排行
 - 核心用户画像和购买行为
 
+---
 实施计划：
 - v1.0：基于 MySQL 的基础数仓 ✅  
 - v2.0：基于 Docker + Hive + Spark SQL 的分布式数仓（进行中）  
@@ -21,6 +21,13 @@
   v1.0           MySQL 8.0, SQL, Navicat   
   v2.0           Docker, Hive, Spark SQL, PySpark   
   v3.0（计划）    Kafka, Flink, Redis   
+
+技术栈：
+| 版本 | 技术栈 |
+|------|--------|
+| v1.0 | MySQL 8.0, SQL, Navicat |
+| v2.0 | Docker, Hive, Spark SQL, PySpark |
+| v3.0（计划） | Kafka, Flink, Redis |
 
 ---
 数仓分层架构：  
@@ -44,6 +51,14 @@ ADS（应用数据层）
   Extra = Using temporary; Using filesort           Extra = Using index condition  
 *优化效果：扫描行数减少 50%*  
  优化原理：利用 B+Tree 索引的最左前缀原则，将查询条件 create_date 放在组合索引首位，实现快速过滤。  
+
+ 性能优化前后对比：
+| 指标 | 优化前 | 优化后 |
+|------|--------|--------|
+| 执行计划 type | ALL（全表扫描） | range（范围扫描） |
+| 扫描行数 | 47,392 行 | 23,696 行 |
+| 使用索引 | 无 | idx_date_user |
+| Extra | Using temporary; Using filesort | Using index condition |
 
  ---
  各层说明  
