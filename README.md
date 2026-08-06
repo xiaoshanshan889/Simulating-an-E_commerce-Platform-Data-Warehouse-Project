@@ -46,7 +46,7 @@ ADS（应用数据层）
 | 使用索引 | 无 | idx_date_user |
 | Extra | Using temporary; Using filesort | Using index condition |
 
-*优化效果：扫描行数减少 50%*  
+**优化效果：扫描行数减少 50%**  
  优化原理：利用 B+Tree 索引的最左前缀原则，将查询条件 create_date 放在组合索引首位，实现快速过滤。 
 
  ---
