@@ -16,13 +16,6 @@
 
 ---
 技术栈：
-
-  版本                   技术栈 
-  v1.0           MySQL 8.0, SQL, Navicat   
-  v2.0           Docker, Hive, Spark SQL, PySpark   
-  v3.0（计划）    Kafka, Flink, Redis   
-
-技术栈：
 | 版本 | 技术栈 |
 |------|--------|
 | v1.0 | MySQL 8.0, SQL, Navicat |
@@ -43,14 +36,7 @@ ADS（应用数据层）
 
 ---
 性能优化成果：  
-针对 DWD 宽表的慢查询问题，通过 EXPLAIN 分析执行计划，建立组合索引进行优化：  
-            优化前                                              优化后
-  执行计划 type = ALL（全表扫描）                     执行计划 type = range（范围扫描）  
-  扫描行数 = 47,392 行                               扫描行数 = 23,696 行  
-  使用索引 = 无                                      使用索引 = idx_date_user  
-  Extra = Using temporary; Using filesort           Extra = Using index condition  
-*优化效果：扫描行数减少 50%*  
- 优化原理：利用 B+Tree 索引的最左前缀原则，将查询条件 create_date 放在组合索引首位，实现快速过滤。  
+针对 DWD 宽表的慢查询问题，通过 EXPLAIN 分析执行计划，建立组合索引进行优化：   
 
  性能优化前后对比：
 | 指标 | 优化前 | 优化后 |
@@ -59,6 +45,8 @@ ADS（应用数据层）
 | 扫描行数 | 47,392 行 | 23,696 行 |
 | 使用索引 | 无 | idx_date_user |
 | Extra | Using temporary; Using filesort | Using index condition |
+*优化效果：扫描行数减少 50%*  
+ 优化原理：利用 B+Tree 索引的最左前缀原则，将查询条件 create_date 放在组合索引首位，实现快速过滤。 
 
  ---
  各层说明  
