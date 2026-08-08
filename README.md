@@ -18,9 +18,9 @@
 ## 技术栈：
 | 版本 | 技术栈 |
 |------|--------|
-| v1.0 | MySQL 8.0, SQL, Navicat |
-| v2.0 | Docker,JDBC, Spark SQL, PySpark |
-| v3.0（计划） | Kafka, Flink, Redis |
+| v1.0 | MySQL 8.0， SQL， Navicat |
+| v2.0 | Docker，JDBC， Spark SQL， PySpark |
+| v3.0（计划） | Kafka，Flink，Redis |
 
 ---
 ### 数仓分层架构
