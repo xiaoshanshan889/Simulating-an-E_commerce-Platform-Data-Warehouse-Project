@@ -71,9 +71,8 @@
 
 
  # 补充v2.0：
-在 v1.0 MySQL 单机数仓的基础上，将计算引擎升级为 Spark SQL，
-通过 Docker Compose 搭建分布式数仓环境，完成 ODS → DWD → DWS → ADS 四层 ETL。
-核心目标：验证大数据量下 Spark 对比 MySQL 的性能优势。
+在 v1.0 MySQL 单机数仓的基础上，将计算引擎升级为 Spark SQL，通过 Docker Compose 搭建分布式数仓环境，完成 ODS → DWD → DWS → ADS 四层 ETL。  
+核心目标：验证大数据量下 Spark 对比 MySQL 的性能优势。  
 
 | | v1.0 | v2.0 |
 |---|---|---|
@@ -93,8 +92,8 @@
  ## 聚合查询
  | 数据量 | MySQL | Spark | 差距 |
 |---|---|---|---|
-| 500 万 | 4.0s | 3.3s | - |
-| 5000 万 | Xs | 7.2s | - |
+| 500 万 | 4.0s | 3.3s | 0.7s |
+| 5000 万 | Xs | 7.2s | Xs |
 
 ## 扩展性
 | 指标 | 数值 |
@@ -105,18 +104,18 @@
 
 ---
 # 踩坑记录
-Hive 容器 Windows 下不稳定 → 放弃 Hive，使用 Spark 内嵌 Metastore
+Hive容器Windows下不稳定 → 放弃 Hive，使用Spark内嵌Metastore
 
 Spark SQL 不支持中文字段名 → 全部改为英文
 
-JDBC 驱动容器重启丢失 → 挂载到宿主机 jars 目录
+JDBC 驱动容器重启丢失 → 挂载到宿主机jars目录
 
-数据未持久化 → Volume 挂载到 Spark warehouse 路径
+数据未持久化 → Volume 挂载到Spark warehouse路径
 
-INSERT OVERWRITE 读写冲突 → 中间表 + 改名方案
+INSERT OVERWRITE 读写冲突 → 中间表+改名方案
 
-分区列冲突 → PARTITIONED BY 独立定义，INSERT 放最后
+分区列冲突 → PARTITIONED BY 独立定义，INSERT放最后
 
-DECIMAL(10,2) 溢出 → 改为 DECIMAL(18,2)
+DECIMAL(10,2) 溢出 → 改为DECIMAL(18,2)
  
  
