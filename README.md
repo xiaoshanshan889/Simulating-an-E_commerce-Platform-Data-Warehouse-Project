@@ -104,6 +104,15 @@
 
 ***最终MySQL以4.2分钟写入2500万数据以作比较，Spark数据量比MySQL多一半的条件下，查询速度比MySQL快三倍。***
 
+### 环境搭建
+docker-compose.yml
+├── spark-master (Spark 3.5.4)
+├── hive-metastore-mysql (MySQL 8.0)
+└── 挂载：
+    ├── 项目文件夹 → /scripts        （SQL 脚本同步）
+    ├── jars 文件夹 → /opt/spark/jars_custom （JDBC 驱动持久化）
+    └── spark-data Volume → /opt/spark/work-dir/spark-warehouse （数据持久化）
+
 ---
 # 踩坑记录
 Hive容器Windows下不稳定 → 放弃 Hive，使用Spark内嵌Metastore
