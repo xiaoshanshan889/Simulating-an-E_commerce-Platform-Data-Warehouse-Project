@@ -1,0 +1,48 @@
+services:
+  metastore-db:
+    image: mysql:8.0
+    container_name: hive-metastore-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: metastore
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  hive-server:
+    image: apache/hive:4.0.0
+    container_name: hive-server
+    depends_on:
+      - metastore-db
+    environment:
+      SERVICE_NAME: hiveserver2
+      HIVE_METASTORE_URI: thrift://hive-server:9083
+    ports:
+      - "10000:10000"
+      - "9083:9083"
+    volumes:
+      - hive-data:/opt/hive/data
+    command: /opt/hive/bin/hive --service hiveserver2
+
+  spark:
+    image: apache/spark:3.5.4
+    container_name: spark-master
+    depends_on:
+      - hive-server
+    environment:
+      SPARK_MODE: master
+      SPARK_SQL_WAREHOUSE_DIR: file:/opt/spark/data/warehouse
+    ports:
+      - "4040:4040"
+      - "8080:8080"
+    volumes:
+      - D:\D盘数仓项目\02_docker_hive_spark:/scripts     # 管脚本文件同步（你的 SQL 文件）→ 改代码方便
+      - spark-data:/opt/spark/work-dir/spark-warehouse   # 管数据持久化（Spark 建表的数据文件）  → 数据不丢
+      - D:\D盘数仓项目\02_docker_hive_spark\jars:/opt/spark/jars_custom    # 进 spark-master 容器，把 jars_custom 里的 mysql-connector-j-8.4.0.jar 复制到 jars 文件夹里。spark自己目录下原本有jars不可直接挂载
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
+
+volumes:
+  mysql-data:
+  hive-data:
+  spark-data:
