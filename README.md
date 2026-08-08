@@ -11,15 +11,15 @@
 ---
 ## 实施计划：
 - v1.0：基于 MySQL 的基础数仓 ✅  
-- v2.0：基于 Docker + Hive + Spark SQL 的分布式数仓（进行中）  
-- v3.0：基于Kafka + Flink 实时流统计（计划）  
+- v2.0：基于 Docker + Hive + Spark SQL 的分布式数仓✅
+- v3.0：基于Kafka + Flink 实时流统计（进行中）  
 
 ---
 ## 技术栈：
 | 版本 | 技术栈 |
 |------|--------|
 | v1.0 | MySQL 8.0, SQL, Navicat |
-| v2.0 | Docker, Hive, Spark SQL, PySpark |
+| v2.0 | Docker,JDBC, Spark SQL, PySpark |
 | v3.0（计划） | Kafka, Flink, Redis |
 
 ---
@@ -68,3 +68,55 @@
 
 **优化效果：扫描行数减少 50%**  
  优化原理：利用 B+Tree 索引的最左前缀原则，将查询条件 create_date 放在组合索引首位，实现快速过滤。 
+
+
+ # 补充v2.0：
+在 v1.0 MySQL 单机数仓的基础上，将计算引擎升级为 Spark SQL，
+通过 Docker Compose 搭建分布式数仓环境，完成 ODS → DWD → DWS → ADS 四层 ETL。
+核心目标：验证大数据量下 Spark 对比 MySQL 的性能优势。
+
+| | v1.0 | v2.0 |
+|---|---|---|
+| 计算引擎 | MySQL | Spark SQL (3.5.4) |
+| 数据量 | 4.7 万 | 5000 万 |
+| 存储 | MySQL InnoDB | Parquet (列式存储) |
+| 环境 | 单机 MySQL | Docker Compose (Spark + Metastore) |
+| 持久化 | 天然持久化 | Docker Volume |
+| 分区 | 无 | DWS 6 张表按维度分区 |
+
+---
+# 结论
+- Spark 在 5000 万行数据量下，聚合查询仅需 7.2s
+- 数据量增长 10 倍，查询时间仅增长 2.2 倍，验证近线性扩展
+- MySQL 单机环境下，同等数据量写入和查询性能严重退化
+ 
+ ## 聚合查询
+ | 数据量 | MySQL | Spark | 差距 |
+|---|---|---|---|
+| 500 万 | 4.0s | 3.3s | - |
+| 5000 万 | Xs | 7.2s | - |
+
+## 扩展性
+| 指标 | 数值 |
+|---|---|
+| 数据量增长 | 10 倍（500万 → 5000万） |
+| Spark 耗时增长 | 2.2 倍（3.3s → 7.2s） |
+| MySQL 5000万写入 | 膨胀耗时约13.7分钟（Spark 仅需约48.4秒） |
+
+---
+# 踩坑记录
+Hive 容器 Windows 下不稳定 → 放弃 Hive，使用 Spark 内嵌 Metastore
+
+Spark SQL 不支持中文字段名 → 全部改为英文
+
+JDBC 驱动容器重启丢失 → 挂载到宿主机 jars 目录
+
+数据未持久化 → Volume 挂载到 Spark warehouse 路径
+
+INSERT OVERWRITE 读写冲突 → 中间表 + 改名方案
+
+分区列冲突 → PARTITIONED BY 独立定义，INSERT 放最后
+
+DECIMAL(10,2) 溢出 → 改为 DECIMAL(18,2)
+ 
+ 
