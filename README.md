@@ -109,9 +109,9 @@ docker-compose.yml
 ├── spark-master (Spark 3.5.4)
 ├── hive-metastore-mysql (MySQL 8.0)
 └── 挂载：
-    ├── 项目文件夹 → /scripts        （SQL 脚本同步）
-    ├── jars 文件夹 → /opt/spark/jars_custom （JDBC 驱动持久化）
-    └── spark-data Volume → /opt/spark/work-dir/spark-warehouse （数据持久化）
+├── 项目文件夹 → /scripts (SQL 脚本同步)
+├── jars 文件夹 → /opt/spark/jars_custom (JDBC 驱动持久化)
+└── spark-data Volume → /opt/spark/work-dir/spark-warehouse (数据持久化)
 
 ---
 # 踩坑记录
